@@ -9,14 +9,18 @@ import (
 
 type Users struct {
 	Templates struct {
-		New    Template
-		SignIn Template
+		New         Template
+		SignIn      Template
+		CurrentUser Template
 	}
 	UserService    *models.UserService
 	SessionService *models.SessionService
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
 	token, err := readCookie(r, CookieSession)
 	if err != nil {
 		fmt.Println(err)
@@ -29,7 +33,9 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+	data.Email = user.Email
+	u.Templates.CurrentUser.Execute(w, r, data)
+
 }
 
 // New user sign up template

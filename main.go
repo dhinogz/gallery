@@ -59,6 +59,8 @@ func main() {
 
 	r.Post("/signout", usersC.ProcessSignOut)
 
+	usersC.Templates.CurrentUser = views.Must(views.ParseFS(
+		templates.FS, "current-user.html", "tailwind.html"))
 	r.Get("/users/me", usersC.CurrentUser)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
