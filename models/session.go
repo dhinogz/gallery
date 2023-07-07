@@ -6,10 +6,15 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"errors"
 	"github.com/dhinogz/lenslocked/rand"
 )
 
 const MinBytesPerToken = 32
+
+var (
+	ErrSignOut = errors.New("models: could not sign you out.")
+)
 
 type Session struct {
 	ID     int
@@ -54,7 +59,7 @@ func (ss SessionService) Create(userID int) (*Session, error) {
 		RETURNING id;`, session.UserID, session.TokenHash)
 	err = row.Scan(&session.ID)
 	if err != nil {
-		return nil, fmt.Errorf("create: %w", err)
+		return nil, ErrSignOut
 	}
 	return &session, nil
 }

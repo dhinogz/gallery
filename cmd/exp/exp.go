@@ -1,40 +1,35 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
-	"github.com/dhinogz/lenslocked/models"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/go-mail/mail/v2"
 )
 
-type Order struct {
-	ID          int
-	UserID      int
-	Amount      int
-	Description int
-}
+const host = "sandbox.smtp.mailtrap.io"
+const port = 587
+const username = "a"
+const password = "w"
 
 func main() {
-	cfg := models.DefaultPostgresConfig()
-	db, err := models.Open(cfg)
+	from := "test@gallery.com"
+	to := "davidhinojosagzz@gmail.com"
+	subject := "Test email"
+	plaintext := "Email body"
+	html := `<h1>Hello there buddy!</h1><p>This is the email</p><p>Hope you enjoy it</p>`
+
+	msg := mail.NewMessage()
+	msg.SetHeader("To", to)
+	msg.SetHeader("From", from)
+	msg.SetHeader("Subject", subject)
+	msg.SetBody("text/plain", plaintext)
+	msg.AddAlternative("text/html", html)
+	msg.WriteTo(os.Stdout)
+
+	dialer := mail.NewDialer(host, port, username, password)
+
+	err := dialer.DialAndSend(msg)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Connected!")
-
-	us := models.UserService{
-		DB: db,
-	}
-	user, err := us.Create("dav1@test.com", "test123")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(user)
 }

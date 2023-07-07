@@ -9,7 +9,7 @@
 <body class="min-h-screen bg-gray-100">
     <header class="bg-gradient-to-r from-blue-800 to-indigo-800 text-white">
         <nav class="px-8 py-6 flex items-center space-x-12">
-            <div class="text-4xl font-serif">Lenslocked</div>
+            <a class="text-4xl font-serif" href="/">Lenslocked</a>
             <div class="flex-grow">
                 <a class="text-lg font-semibold hover:text-blue-100 pr-8" href="/">
                     Home
@@ -22,19 +22,41 @@
                 </a>
             </div>
             <div class="space-x-4">
-                <form action="/signout" method="post" class="inline pr-4">
-                    <div class="hidden">
-                        {{csrfField}}
-                    </div>
-                    <button type="submit">Sign Out</button>
-                </form>
-                <a href="/signin">Sign in</a>
-                <a class="px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded" href="/signup">
-                    Sign up
-                </a>
+                {{if currentUser}}
+                    <form action="/signout" method="post" class="inline pr-4">
+                        <div class="hidden">
+                            {{csrfField}}
+                        </div>
+                        <button type="submit">Sign Out</button>
+                    </form>
+                {{else}}
+                    <a href="/signin">Sign in</a>
+                    <a class="px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded" href="/signup">
+                        Sign up
+                    </a>
+                {{end}}
             </div>
         </nav>
     </header>
+    <!-- Alerts -->
+    {{if errors}}
+      <div class="py-4 px-2">
+        {{range errors}}
+          <!-- Add the closeable class here -->
+          <div class="closeable flex bg-red-100 rounded px-2 py-2 text-red-800 mb-2">
+            <div class="flex-grow">
+              {{.}}
+            </div>
+            <!-- Add the onclick here -->
+            <a href="#" onclick="closeAlert(event)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </a>
+          </div>
+        {{end}}
+      </div>
+    {{end}}
 {{end}}
 
 
@@ -46,6 +68,13 @@
         </div>
     </div>
 </footer>
+<script>
+  function closeAlert(event) {
+    let closeable = event.target.closest(".closeable");
+    closeable.remove();
+    // closeable.classList.add("hidden");
+  }
+</script>
 </body>
 </html>
 {{end}}
